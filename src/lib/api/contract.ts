@@ -1,56 +1,35 @@
 /**
- * QubitWatch — API contract.
+ * Frontend ↔ prediction-service contract.
  *
- * The frontend talks to a single `QubitWatchApi` interface. Today the only
- * implementation is `mockAdapter` (seeded DEMO DATA). A later phase swaps in
- * `httpAdapter`, which calls the documented endpoints below against the
- * Python inference service. No component imports an adapter directly.
- *
- *   GET  /api/v1/backends                               → BackendSummary[]
- *   GET  /api/v1/series?backend&qubit&from&to           → SeriesPoint[]
- *   GET  /api/v1/predictions?backend&qubit&model        → PredictionRecord[]
- *   GET  /api/v1/drift-events?backend&qubit             → DriftEvent[]
- *   GET  /api/v1/observations?<ObservationQuery>        → Paginated<ObservationRow>
- *   GET  /api/v1/observations/:id                       → ObservationRow
- *   POST /api/v1/predict  { features: ModelFeatureVector, model: ModelId }
- *                                                       → { predicted_next_error: number }
+ * The browser never runs a model. It assembles the documented feature vector
+ * from recorded observations and asks a service for the next-record estimate.
+ * Until that service exists the demo adapter answers with a clearly labelled
+ * placeholder derived from the research's persistence baseline.
  */
 
-import type {
-  BackendId,
-  DriftEvent,
-  ModelFeatureVector,
-  ModelId,
-  ObservationQuery,
-  ObservationRow,
-  Paginated,
-  PredictionRecord,
-  SeriesPoint,
-} from "../types";
+import type { ModelFeatureVector, ModelId } from "../types";
 
-export interface BackendSummary {
-  id: BackendId;
-  qubitsMonitored: number;
-  demoQubits: number[];
-  latest: SeriesPoint | null;
-  recalEvents: number;
+export interface PredictRequest {
+  model: ModelId;
+  features: ModelFeatureVector;
+  /** observed_time of the record the features were computed at. */
+  issued_at: string;
 }
 
 export interface PredictResponse {
-  predicted_next_error: number;
   model: ModelId;
   issued_at: string;
-  /** "demo" until a real inference service is connected. */
-  provenance: "demo" | "model";
+  predicted_next_error: number;
+  /**
+   * "model"                — output of the trained pipeline (live service).
+   * "persistence_baseline" — placeholder: next = current, the documented
+   *                          baseline from the research. DEMO DATA, not a
+   *                          model prediction.
+   */
+  provenance: "model" | "persistence_baseline";
 }
 
 export interface QubitWatchApi {
-  readonly mode: "demo" | "live";
-  listBackends(): Promise<BackendSummary[]>;
-  getSeries(params: { backend: BackendId; qubit: number; from?: number; to?: number }): Promise<SeriesPoint[]>;
-  getPredictions(params: { backend: BackendId; qubit: number; model: ModelId }): Promise<PredictionRecord[]>;
-  getDriftEvents(params: { backend: BackendId; qubit?: number | null }): Promise<DriftEvent[]>;
-  queryObservations(query: ObservationQuery): Promise<Paginated<ObservationRow>>;
-  getObservation(id: string): Promise<ObservationRow | null>;
-  predict(features: ModelFeatureVector, model: ModelId): Promise<PredictResponse>;
+  mode: "demo" | "http";
+  predict(req: PredictRequest): Promise<PredictResponse>;
 }

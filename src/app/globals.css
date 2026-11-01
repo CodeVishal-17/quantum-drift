@@ -1,26 +1,204 @@
 @import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+/* ------------------------------------------------------------------ */
+/* QubitWatch design tokens                                            */
+/* ------------------------------------------------------------------ */
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Surfaces */
+  --qw-void: #04070e;
+  --qw-midnight: #060a14;
+  --qw-navy-950: #080e1c;
+  --qw-navy-900: #0b1222;
+  --qw-navy-800: #0f182c;
+  --qw-navy-700: #152038;
+  --qw-graphite-900: #10141d;
+  --qw-graphite-800: #161b26;
+  --qw-graphite-700: #1e2431;
+
+  /* Lines */
+  --qw-line: rgb(156 178 214 / 0.1);
+  --qw-line-strong: rgb(156 178 214 / 0.2);
+  --qw-line-cyan: rgb(34 211 238 / 0.35);
+
+  /* Accents */
+  --qw-cyan: #22d3ee;
+  --qw-cyan-bright: #5ee7ff;
+  --qw-cyan-deep: #0891b2;
+  --qw-violet: #8b5cf6;
+  --qw-violet-bright: #a78bfa;
+  --qw-violet-deep: #6d28d9;
+  --qw-amber: #f5b544;
+  --qw-rose: #fb7185;
+  --qw-emerald: #34d399;
+
+  /* Type */
+  --qw-text: #e9eef7;
+  --qw-text-2: #a9b6cb;
+  --qw-text-3: #6f7d94;
+  --qw-text-4: #4b586d;
+
+  /* shadcn mapping */
+  --background: var(--qw-midnight);
+  --foreground: var(--qw-text);
+  --card: var(--qw-navy-900);
+  --card-foreground: var(--qw-text);
+  --popover: var(--qw-navy-800);
+  --popover-foreground: var(--qw-text);
+  --primary: var(--qw-cyan);
+  --primary-foreground: #03131a;
+  --secondary: var(--qw-navy-700);
+  --secondary-foreground: var(--qw-text);
+  --muted: var(--qw-navy-800);
+  --muted-foreground: var(--qw-text-3);
+  --accent: rgb(34 211 238 / 0.08);
+  --accent-foreground: var(--qw-text);
+  --destructive: var(--qw-rose);
+  --border: var(--qw-line);
+  --input: var(--qw-line-strong);
+  --ring: rgb(34 211 238 / 0.5);
+  --radius: 0.375rem;
+
+  --chart-1: var(--qw-cyan);
+  --chart-2: var(--qw-violet);
+  --chart-3: var(--qw-amber);
+  --chart-4: var(--qw-emerald);
+  --chart-5: var(--qw-rose);
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  --color-void: var(--qw-void);
+  --color-midnight: var(--qw-midnight);
+  --color-navy-950: var(--qw-navy-950);
+  --color-navy-900: var(--qw-navy-900);
+  --color-navy-800: var(--qw-navy-800);
+  --color-navy-700: var(--qw-navy-700);
+  --color-graphite-900: var(--qw-graphite-900);
+  --color-graphite-800: var(--qw-graphite-800);
+  --color-graphite-700: var(--qw-graphite-700);
+  --color-line: var(--qw-line);
+  --color-line-strong: var(--qw-line-strong);
+  --color-cyan: var(--qw-cyan);
+  --color-cyan-bright: var(--qw-cyan-bright);
+  --color-cyan-deep: var(--qw-cyan-deep);
+  --color-violet: var(--qw-violet);
+  --color-violet-bright: var(--qw-violet-bright);
+  --color-violet-deep: var(--qw-violet-deep);
+  --color-amber: var(--qw-amber);
+  --color-rose: var(--qw-rose);
+  --color-emerald: var(--qw-emerald);
+  --color-text: var(--qw-text);
+  --color-text-2: var(--qw-text-2);
+  --color-text-3: var(--qw-text-3);
+  --color-text-4: var(--qw-text-4);
+
+  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, "SF Mono", Menlo, monospace;
+
+  --radius-sm: calc(var(--radius) - 2px);
+  --radius-md: var(--radius);
+  --radius-lg: calc(var(--radius) + 2px);
+  --radius-xl: calc(var(--radius) + 6px);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+/* ------------------------------------------------------------------ */
+/* Base                                                                */
+/* ------------------------------------------------------------------ */
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  html {
+    color-scheme: dark;
+    scroll-behavior: smooth;
+  }
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+    font-feature-settings:
+      "ss01" on,
+      "cv11" on;
+    text-rendering: optimizeLegibility;
+  }
+  ::selection {
+    background: rgb(34 211 238 / 0.28);
+    color: var(--qw-text);
+  }
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: rgb(156 178 214 / 0.14);
+    border-radius: 999px;
+    border: 3px solid transparent;
+    background-clip: padding-box;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: rgb(156 178 214 / 0.26);
+    border: 3px solid transparent;
+    background-clip: padding-box;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+/* ------------------------------------------------------------------ */
+/* Utilities                                                           */
+/* ------------------------------------------------------------------ */
+
+@utility tabular {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Small uppercase technical label */
+@utility eyebrow {
+  @apply font-mono text-[10.5px] uppercase tracking-[0.16em] text-text-3;
+}
+
+/* Thin-bordered surface used by every panel and card */
+@utility surface {
+  border: 1px solid var(--qw-line);
+  border-radius: var(--radius-lg);
+  background: var(--qw-navy-900);
+}
+
+.recharts-cartesian-grid line {
+  stroke: rgb(156 178 214 / 0.08);
+}
+.recharts-tooltip-cursor {
+  stroke: rgb(34 211 238 / 0.35) !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }
